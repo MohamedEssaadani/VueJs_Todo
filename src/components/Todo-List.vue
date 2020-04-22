@@ -1,0 +1,102 @@
+<template>
+  <div>
+    <input
+      type="text"
+      class="todo-input"
+      placeholder="What you have to do?"
+      v-model="todo"
+      @keyup.enter="addTodo"
+    />
+    <div v-show="this.todosList.length === 0">There is no todos</div>
+    <div v-for="(todo, index) in todosList" :key="todo.id" class="todo-item">
+      <div>{{todo.title}}</div>
+
+      <div class="remove-item" @click="remove(index)">&times;</div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      todo: "",
+      todoId: 5,
+      todosList: [
+        {
+          id: 1,
+          title: "Complete Schop Refactoring",
+          completed: true
+        },
+        {
+          id: 2,
+          title: "Create Todos List Vue Js",
+          completed: true
+        },
+        {
+          id: 3,
+          title: "Practice ELOQUENT",
+          completed: false
+        },
+        {
+          id: 4,
+          title: "Do Axios Get Request",
+          completed: false
+        }
+      ]
+    };
+  },
+  methods: {
+    addTodo() {
+      //check if the user enter an empty text
+      if (this.todo === "") {
+        return;
+      }
+
+      //create an object for user todo
+      let todo = {
+        id: this.todoId,
+        title: this.todo,
+        completed: false
+      };
+
+      //add todo to the todos list
+      this.todosList.push(todo);
+      this.todo = "";
+      this.todoId += 1;
+    },
+    remove(index) {
+      this.todosList.splice(index, 1);
+    }
+  }
+};
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style>
+.todo-input {
+  width: 100%;
+  padding: 10px 18px;
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+.todo-input:focus {
+  outline: 0;
+}
+
+.todo-item {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.remove-item {
+  cursor: pointer;
+  margin-left: 14px;
+}
+
+.remove-item:hover {
+  color: red;
+}
+</style>
