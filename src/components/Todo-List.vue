@@ -15,29 +15,15 @@
       enter-active-class="animated fadeInUp"
       leave-active-class="animated fadeOutDown"
     >
-      <div v-for="(todo, index) in todosListFiltered" :key="todo.id" class="todo-item">
-        <div class="todo-item-left">
-          <input type="checkbox" v-model="todo.completed" />
-          <div
-            v-if="!todo.editing"
-            @dblclick="editTodo(todo)"
-            class="todo-item-label"
-            :class="{completed: todo.completed}"
-          >{{todo.title}}</div>
-          <input
-            v-else
-            type="text"
-            v-model="todo.title"
-            @blur="updateTodo(todo)"
-            @keyup.enter="updateTodo(todo)"
-            @keyup.esc="cancelEdit(todo)"
-            v-focus
-            class="todo-item-edit completed"
-          />
-        </div>
-
-        <div class="remove-item" @click="remove(index)">&times;</div>
-      </div>
+      <todo-item
+        v-for="(todo, index) in todosListFiltered"
+        :key="todo.id"
+        :todo="todo"
+        :index="index"
+        @removed="removeTodo()"
+        @updated="updateTodo()"
+        class="todo-item"
+      ></todo-item>
     </transition-group>
     <div class="extra-container">
       <div>
@@ -65,7 +51,12 @@
 </template>
 
 <script>
+import TodoItem from "./Todo-Item";
+
 export default {
+  components: {
+    TodoItem
+  },
   data() {
     return {
       todo: "",
@@ -121,18 +112,16 @@ export default {
       this.todo = "";
       this.todoId += 1;
     },
-    remove(index) {
+    removeTodo(index) {
       this.todosList.splice(index, 1);
     },
     editTodo(todo) {
       todo.editing = true;
       this.cacheTitle = todo.title;
     },
-    updateTodo(todo) {
-      if (todo.title == "") {
-        todo.title = this.cacheTitle;
-      }
-      todo.editing = false;
+    updateTodo(data) {
+      //remove old todo & replace it with new todo
+      this.todosList.splice(data.index, 1, data.updateTodo);
     },
     cancelEdit(todo) {
       todo.editing = false;
@@ -172,15 +161,6 @@ export default {
 
       //return true if there is completed todos & false if not
       return todosCompleted.length > 0;
-    }
-  },
-  directives: {
-    //custom directive his name is focus
-    focus: {
-      //when we use it he will do the work when the element that use this directive is inserted to the dom
-      inserted: function(el) {
-        el.focus();
-      }
     }
   }
 };
