@@ -20,6 +20,7 @@
         :key="todo.id"
         :todo="todo"
         :index="index"
+        :checkAll="anyRemaining"
         @removed="removeTodo()"
         @updated="updateTodo"
         class="todo-item"
@@ -32,7 +33,7 @@
           Check All
         </label>
       </div>
-      <div>({{ remaining }}) items left</div>
+      <div>({{ remaining }}) tasks left</div>
     </div>
     <div class="extra-container">
       <div>
@@ -115,18 +116,9 @@ export default {
     removeTodo(index) {
       this.todosList.splice(index, 1);
     },
-    editTodo(todo) {
-      todo.editing = true;
-      this.cacheTitle = todo.title;
-    },
     updateTodo(data) {
       //remove old todo & replace it with new todo
       this.todosList.splice(data.index, 1, data.updatedTodo);
-    },
-    cancelEdit(todo) {
-      todo.editing = false;
-      //when user desicde to cancel editing without changing then we get title to the old value
-      todo.title = this.cacheTitle;
     },
     checkAll() {
       this.todosList.forEach(todo => (todo.completed = event.target.checked));

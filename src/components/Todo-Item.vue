@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="todo-item-left">
-      <input type="checkbox" v-model="completed" />
+      <input type="checkbox" v-model="completed" @changeitems="update()" />
       <div
         v-if="!editing"
         @dblclick="edit()"
@@ -35,6 +35,15 @@ export default {
     index: {
       type: Number,
       required: true
+    },
+    checkAll: {
+      type: Boolean,
+      required: true
+    }
+  },
+  watch: {
+    checkAll() {
+      this.completed = this.checkAll ? true : this.todo.completed;
     }
   },
   methods: {
