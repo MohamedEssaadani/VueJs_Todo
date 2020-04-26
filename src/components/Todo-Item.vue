@@ -50,7 +50,7 @@ export default {
         this.title = this.cacheTitle;
       }
       this.editing = false;
-      this.$emit("updated", {
+      var data = {
         index: this.index,
         updatedTodo: {
           id: this.id,
@@ -58,7 +58,8 @@ export default {
           completed: this.completed,
           editing: this.editing
         }
-      });
+      };
+      this.$emit("updated", data);
     },
     cancelEdit() {
       this.editing = false;

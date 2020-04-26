@@ -21,7 +21,7 @@
         :todo="todo"
         :index="index"
         @removed="removeTodo()"
-        @updated="updateTodo()"
+        @updated="updateTodo"
         class="todo-item"
       ></todo-item>
     </transition-group>
@@ -121,7 +121,7 @@ export default {
     },
     updateTodo(data) {
       //remove old todo & replace it with new todo
-      this.todosList.splice(data.index, 1, data.updateTodo);
+      this.todosList.splice(data.index, 1, data.updatedTodo);
     },
     cancelEdit(todo) {
       todo.editing = false;
