@@ -21,42 +21,35 @@
         :todo="todo"
         :index="index"
         :checkAll="anyRemaining"
-        @removed="removeTodo()"
-        @updated="updateTodo"
         class="todo-item"
       ></todo-item>
     </transition-group>
     <div class="extra-container">
-      <div>
-        <label>
-          <input type="checkbox" @change="checkAll()" :checked="this.anyRemaining" />
-          Check All
-        </label>
-      </div>
-      <div>({{ remaining }}) tasks left</div>
+      <check-all :anyRemaining="anyRemaining"></check-all>
+      <todos-left :remaining="remaining"></todos-left>
     </div>
     <div class="extra-container">
-      <div>
-        <button :class="{ active : filter == 'all'}" @click="filter = 'all' ">All</button>
-        <button :class="{ active : filter == 'active'}" @click="filter = 'active' ">Active</button>
-        <button :class="{ active : filter == 'completed'}" @click="filter = 'completed' ">Completed</button>
-      </div>
-      <div>
-        <transition name="fade">
-          <!--i will use a computed property called clearCompleted to show the button just when there is completed todos-->
-          <button v-show="showClearCompleted" @click="clearCompleted()">Clear Completed</button>
-        </transition>
-      </div>
+      <todos-filter></todos-filter>
+      <clear-completed :showClearCompleted="showClearCompleted"></clear-completed>
     </div>
   </div>
 </template>
 
 <script>
 import TodoItem from "./Todo-Item";
+import { eventBus } from "../main";
+import TodosLeft from "./Todos-Left";
+import CheckAll from "./Check-All";
+import TodosFilter from "./Todos-Filter";
+import ClearCompleted from "./Clear-Completed";
 
 export default {
   components: {
-    TodoItem
+    TodoItem,
+    TodosLeft,
+    CheckAll,
+    TodosFilter,
+    ClearCompleted
   },
   data() {
     return {
@@ -92,6 +85,21 @@ export default {
         }
       ]
     };
+  },
+  created() {
+    // //listen to removed event & then accept the param coming from the emitting to our call back function & then call the removeTodo()
+    eventBus.$on("removed", index => this.removeTodo(index));
+    eventBus.$on("updated", data => this.updateTodo(data));
+    eventBus.$on("checkAll", () => this.checkAll());
+    eventBus.$on("filter", value => (this.filter = value));
+    eventBus.$on("clearCompleted", () => this.clearCompleted());
+  },
+  beforeDestroy() {
+    eventBus.$off("removed", index => this.removeTodo(index));
+    eventBus.$off("updated", data => this.updateTodo(data));
+    eventBus.$off("checkAll", () => this.checkAll());
+    eventBus.$off("filter", value => (this.filter = value));
+    eventBus.$off("clearCompleted", () => this.clearCompleted());
   },
   methods: {
     addTodo() {
@@ -135,17 +143,13 @@ export default {
       return this.remaining == 0;
     },
     todosListFiltered() {
-      var todos = undefined;
-      if (this.filter == "all") {
-        todos = this.todosList;
-      }
       if (this.filter == "active") {
-        todos = this.todosList.filter(todo => !todo.completed);
+        return this.todosList.filter(todo => !todo.completed);
       }
       if (this.filter == "completed") {
-        todos = this.todosList.filter(todo => todo.completed);
+        return this.todosList.filter(todo => todo.completed);
       }
-      return todos;
+      return this.todosList;
     },
     showClearCompleted() {
       //create new array for the completed todos

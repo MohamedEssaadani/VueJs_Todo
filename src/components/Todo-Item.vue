@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="todo-item-left">
-      <input type="checkbox" v-model="completed" @changeitems="update()" />
+      <input type="checkbox" v-model="completed" @change="update()" />
       <div
         v-if="!editing"
         @dblclick="edit()"
@@ -25,6 +25,8 @@
 </template>
 
 <script>
+import { eventBus } from "../main";
+
 export default {
   name: "todo-item",
   props: {
@@ -48,7 +50,7 @@ export default {
   },
   methods: {
     remove(index) {
-      this.$emit("removed", index);
+      eventBus.$emit("removed", index);
     },
     edit() {
       this.editing = true;
@@ -68,7 +70,7 @@ export default {
           editing: this.editing
         }
       };
-      this.$emit("updated", data);
+      eventBus.$emit("updated", data);
     },
     cancelEdit() {
       this.editing = false;
