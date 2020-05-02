@@ -20,12 +20,12 @@
       />
     </div>
 
-    <div class="remove-item" @click="remove(index)">&times;</div>
+    <div class="remove-item" @click="remove(id)">&times;</div>
   </div>
 </template>
 
 <script>
-import { eventBus } from "../main";
+// import { eventBus } from "../main";
 
 export default {
   name: "todo-item",
@@ -49,28 +49,34 @@ export default {
     }
   },
   methods: {
-    remove(index) {
-      eventBus.$emit("removed", index);
+    remove(id) {
+      this.$store.dispatch("removeTodo", id);
     },
     edit() {
+      //make editing prop as true to show the input for editing
       this.editing = true;
+      //save the title in cachedVariable for using it later
       this.cacheTitle = this.title;
     },
     update() {
       if (this.title == "") {
+        //if the title is empty then we will get back the old title
         this.title = this.cacheTitle;
       }
+
+      //for hiding the input for editing
       this.editing = false;
-      var data = {
-        index: this.index,
-        updatedTodo: {
-          id: this.id,
-          title: this.title,
-          completed: this.completed,
-          editing: this.editing
-        }
+
+      //create object contains the new data
+      let todo = {
+        id: this.id,
+        title: this.title,
+        completed: this.completed,
+        editing: this.editing
       };
-      eventBus.$emit("updated", data);
+
+      //dispatch update
+      this.$store.dispatch("updateTodo", todo);
     },
     cancelEdit() {
       this.editing = false;

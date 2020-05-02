@@ -7,19 +7,18 @@
 </template>
 
 <script>
-import { eventBus } from "../main";
+// import { eventBus } from "../main";
 
 export default {
   name: "todos-filter",
-  data() {
-    return {
-      filterTodos: "all"
-    };
+  computed: {
+    filterTodos() {
+      return this.$store.state.filter;
+    }
   },
   methods: {
-    filter(value) {
-      this.filterTodos = value;
-      eventBus.$emit("filter", value);
+    filter(choice) {
+      this.$store.dispatch('changeFilter', choice);
     }
   }
 };

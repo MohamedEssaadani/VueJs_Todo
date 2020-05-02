@@ -1,14 +1,10 @@
 <template>
   <div>
-    <input
-      type="text"
-      class="todo-input"
-      placeholder="What you have to do?"
-      v-model="todo"
-      @keyup.enter="addTodo"
-    />
-
-    <div v-show="this.todosList.length === 0">There is no todos</div>
+    <add-todo></add-todo>
+    <div
+      v-show="this.$store.state.todosList.length === 0"
+      style="margin-bottom:20px;"
+    >There is no todos</div>
 
     <transition-group
       name="fade"
@@ -25,23 +21,23 @@
       ></todo-item>
     </transition-group>
     <div class="extra-container">
-      <check-all :anyRemaining="anyRemaining"></check-all>
-      <todos-left :remaining="remaining"></todos-left>
+      <check-all></check-all>
+      <todos-left></todos-left>
     </div>
     <div class="extra-container">
       <todos-filter></todos-filter>
-      <clear-completed :showClearCompleted="showClearCompleted"></clear-completed>
+      <clear-completed></clear-completed>
     </div>
   </div>
 </template>
 
 <script>
 import TodoItem from "./Todo-Item";
-import { eventBus } from "../main";
 import TodosLeft from "./Todos-Left";
 import CheckAll from "./Check-All";
 import TodosFilter from "./Todos-Filter";
 import ClearCompleted from "./Clear-Completed";
+import AddTodo from "./add-todo";
 
 export default {
   components: {
@@ -49,114 +45,15 @@ export default {
     TodosLeft,
     CheckAll,
     TodosFilter,
-    ClearCompleted
-  },
-  data() {
-    return {
-      todo: "",
-      //keep title inside it when user try to edit for canceling purpose
-      cacheTitle: "",
-      filter: "all",
-      todoId: 5,
-      todosList: [
-        {
-          id: 1,
-          title: "Complete Schop Refactoring",
-          completed: true,
-          editing: false
-        },
-        {
-          id: 2,
-          title: "Create Todos List Vue Js",
-          completed: true,
-          editing: false
-        },
-        {
-          id: 3,
-          title: "Practice ELOQUENT",
-          completed: false,
-          editing: false
-        },
-        {
-          id: 4,
-          title: "Do Axios Get Request",
-          completed: false,
-          editing: false
-        }
-      ]
-    };
-  },
-  created() {
-    // //listen to removed event & then accept the param coming from the emitting to our call back function & then call the removeTodo()
-    eventBus.$on("removed", index => this.removeTodo(index));
-    eventBus.$on("updated", data => this.updateTodo(data));
-    eventBus.$on("checkAll", () => this.checkAll());
-    eventBus.$on("filter", value => (this.filter = value));
-    eventBus.$on("clearCompleted", () => this.clearCompleted());
-  },
-  beforeDestroy() {
-    eventBus.$off("removed", index => this.removeTodo(index));
-    eventBus.$off("updated", data => this.updateTodo(data));
-    eventBus.$off("checkAll", () => this.checkAll());
-    eventBus.$off("filter", value => (this.filter = value));
-    eventBus.$off("clearCompleted", () => this.clearCompleted());
-  },
-  methods: {
-    addTodo() {
-      //check if the user enter an empty text
-      if (this.todo === "") {
-        return;
-      }
-
-      //create an object for user todo
-      let todo = {
-        id: this.todoId,
-        title: this.todo,
-        completed: false,
-        editing: false
-      };
-
-      //add todo to the todos list
-      this.todosList.push(todo);
-      this.todo = "";
-      this.todoId += 1;
-    },
-    removeTodo(index) {
-      this.todosList.splice(index, 1);
-    },
-    updateTodo(data) {
-      //remove old todo & replace it with new todo
-      this.todosList.splice(data.index, 1, data.updatedTodo);
-    },
-    checkAll() {
-      this.todosList.forEach(todo => (todo.completed = event.target.checked));
-    },
-    clearCompleted() {
-      this.todosList = this.todosList.filter(todo => !todo.completed);
-    }
+    ClearCompleted,
+    AddTodo
   },
   computed: {
-    remaining() {
-      return this.todosList.filter(todo => !todo.completed).length;
-    },
     anyRemaining() {
-      return this.remaining == 0;
+      return this.$store.getters.remaining == 0;
     },
     todosListFiltered() {
-      if (this.filter == "active") {
-        return this.todosList.filter(todo => !todo.completed);
-      }
-      if (this.filter == "completed") {
-        return this.todosList.filter(todo => todo.completed);
-      }
-      return this.todosList;
-    },
-    showClearCompleted() {
-      //create new array for the completed todos
-      let todosCompleted = this.todosList.filter(todo => todo.completed);
-
-      //return true if there is completed todos & false if not
-      return todosCompleted.length > 0;
+      return this.$store.getters.todosListFiltered;
     }
   }
 };

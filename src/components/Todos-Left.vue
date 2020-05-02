@@ -5,10 +5,9 @@
 <script>
 export default {
   name: "todos-left",
-  props: {
-    remaining: {
-      type: Number,
-      required: true
+  computed: {
+    remaining() {
+      return this.$store.getters.remaining;
     }
   }
 };

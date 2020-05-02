@@ -8,19 +8,18 @@
 </template>
 
 <script>
-import { eventBus } from "../main";
+// import { eventBus } from "../main";
 
 export default {
   name: "check-all",
-  props: {
-    anyRemaining: {
-      type: Boolean,
-      required: true
+  computed: {
+    anyRemaining() {
+      return this.$store.getters.anyRemaining;
     }
   },
   methods: {
     checkAll() {
-      eventBus.$emit("checkAll");
+      this.$store.dispatch("checkAll", event.target.checked);
     }
   }
 };
