@@ -1,35 +1,16 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import Axios from 'axios'
+
 
 Vue.use(Vuex);
 
+//set default url for API
+Axios.defaults.baseURL = "http://localhost:8000/api";
+
 export const store = new Vuex.Store({
     state: {
-        todosList: [{
-                id: 1,
-                title: "Complete Schop Refactoring",
-                completed: true,
-                editing: false
-            },
-            {
-                id: 2,
-                title: "Create Todos List Vue Js",
-                completed: true,
-                editing: false
-            },
-            {
-                id: 3,
-                title: "Practice ELOQUENT",
-                completed: false,
-                editing: false
-            },
-            {
-                id: 4,
-                title: "Do Axios Get Request",
-                completed: false,
-                editing: false
-            }
-        ],
+        todosList: [],
         filter: "all",
     },
     getters: {
@@ -59,6 +40,9 @@ export const store = new Vuex.Store({
         }
     },
     mutations: {
+        getTodos(state, todos) {
+            state.todosList = todos;
+        },
         addTodo(state, todo) {
             state.todosList.push({
                 id: todo.id,
@@ -96,21 +80,76 @@ export const store = new Vuex.Store({
         }
     },
     actions: {
+        getTodos(context) {
+            Axios.get('/todos')
+                .then(response => {
+                    context.commit('getTodos', response.data);
+                })
+                .catch(error => console.log(error));
+        },
         addTodo(context, todo) {
-            context.commit('addTodo', todo);
+            Axios.post('/todos', {
+                    title: todo.title,
+                    completed: todo.completed
+                })
+                .then(response => {
+                    context.commit('addTodo', response.data);
+                })
+                .catch(error => {
+                    console.log(error);
+                })
         },
         removeTodo(context, id) {
-            context.commit('removeTodo', id);
+            Axios.delete('/todos/' + id)
+                .then(() => {
+                    context.commit('removeTodo', id);
+                })
+                .catch(error => {
+                    console.log(error);
+                })
         },
         updateTodo(context, todo) {
-            context.commit('updateTodo', todo);
-
+            Axios.patch('/todos/' + todo.id, {
+                    title: todo.title,
+                    completed: todo.completed
+                })
+                .then(response => {
+                    context.commit('updateTodo', response.data);
+                })
+                .catch(error => {
+                    console.log(error);
+                });
         },
         clearCompleted(context) {
-            context.commit('clearCompleted');
+            const completedTodos = context.state.todosList
+                //return new array with specified condition
+                .filter(todo => todo.completed)
+                //return specific field from the array
+                .map(todo => todo.id);
+            Axios.delete('/clearCompleted', {
+                    data: {
+                        completedTodos: completedTodos
+                    }
+                })
+                .then(response => {
+                    console.log(response.data);
+                    context.commit('clearCompleted');
+                })
+                .catch(error => {
+                    console.log(error);
+                });
         },
         checkAll(context, checked) {
-            context.commit('checkAll', checked);
+            Axios.patch('/checkAll', {
+                    //send completed property to make all todos (completed true)
+                    completed: checked
+                })
+                .then(() => {
+                    context.commit('checkAll', checked);
+                })
+                .catch(error => {
+                    console.log(error);
+                });
         },
         changeFilter(context, choice) {
             context.commit('changeFilter', choice);

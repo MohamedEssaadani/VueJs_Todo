@@ -48,6 +48,9 @@ export default {
     ClearCompleted,
     AddTodo
   },
+  created(){
+    this.$store.dispatch('getTodos');
+  },
   computed: {
     anyRemaining() {
       return this.$store.getters.remaining == 0;
