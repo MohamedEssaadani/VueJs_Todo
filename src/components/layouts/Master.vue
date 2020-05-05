@@ -2,7 +2,11 @@
   <div id="app">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
       <a class="navbar-brand" href="#">
-        <img alt="Vue logo" src="../../assets/images/todoPic.png" style="height:45px; width:60px;" />
+        <img
+          alt="Vue logo"
+          src="../../assets/images/todoPic.png"
+          style="height:45px; width:60px; margin-left:40px;"
+        />
       </a>
       <button
         class="navbar-toggler"
@@ -36,7 +40,7 @@
             <router-link class="nav-link" to="/signup">Sign Up</router-link>
           </li>
           <li class="nav-item mr-auto">
-            <router-link class="nav-link" to="/signin">Sign In</router-link>
+            <router-link class="nav-link" style="margin-right:40px;" to="/signin">Sign In</router-link>
           </li>
         </ul>
       </div>
