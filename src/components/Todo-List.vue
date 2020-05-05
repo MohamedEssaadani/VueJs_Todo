@@ -37,7 +37,7 @@ import TodosLeft from "./Todos-Left";
 import CheckAll from "./Check-All";
 import TodosFilter from "./Todos-Filter";
 import ClearCompleted from "./Clear-Completed";
-import AddTodo from "./add-todo";
+import AddTodo from "./Add-todo";
 
 export default {
   components: {
@@ -48,8 +48,8 @@ export default {
     ClearCompleted,
     AddTodo
   },
-  created(){
-    this.$store.dispatch('getTodos');
+  created() {
+    this.$store.dispatch("getTodos");
   },
   computed: {
     anyRemaining() {
@@ -137,6 +137,7 @@ button {
   font-size: 15px;
   background-color: white;
   appearance: none;
+  padding: 4px;
 }
 
 button:hover {
